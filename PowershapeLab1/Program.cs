@@ -121,10 +121,10 @@ namespace PowershapeLab1
             Point rightBottomCircleCenter = new Point(lengthToCircleCenter, 0.0, widthToBottomCircleCenter);
             Point rightUpperCircleCenter = new Point(lengthToCircleCenter, 0.0, widthToUpperCircleCenter);
             
-            Point leftBottomCircleStartingPoint = new Point(-lengthToCircleCenter + radius, 0.0, widthToBottomCircleCenter);
-            Point leftUpperCircleStartingPoint = new Point(-lengthToCircleCenter + radius, 0.0, widthToUpperCircleCenter);
-            Point rightBottomCircleStartingPoint = new Point(lengthToCircleCenter + radius, 0.0, widthToBottomCircleCenter);
-            Point rightUpperCircleStartingPoint = new Point(lengthToCircleCenter + radius, 0.0, widthToUpperCircleCenter);
+            Point leftBottomCircleStartingPoint = new Point(-lengthToCircleCenter, 0.0 + radius, widthToBottomCircleCenter);
+            Point leftUpperCircleStartingPoint = new Point(-lengthToCircleCenter, 0.0 + radius, widthToUpperCircleCenter);
+            Point rightBottomCircleStartingPoint = new Point(lengthToCircleCenter, 0.0 + radius, widthToBottomCircleCenter);
+            Point rightUpperCircleStartingPoint = new Point(lengthToCircleCenter, 0.0 + radius, widthToUpperCircleCenter);
 
             // Circles
             PSArc leftBottomCircle = psModel.Arcs.CreateArcCircle(leftBottomCircleCenter, leftBottomCircleStartingPoint, radius);
@@ -132,11 +132,20 @@ namespace PowershapeLab1
             PSArc rightBottomCircle = psModel.Arcs.CreateArcCircle(rightBottomCircleCenter, rightBottomCircleStartingPoint, radius);
             PSArc rightUpperCircle = psModel.Arcs.CreateArcCircle(rightUpperCircleCenter, rightUpperCircleStartingPoint, radius);
 
+            leftBottomCircle.Rotate(Autodesk.Axes.X, 90.0, 0);
+            leftUpperCircle.Rotate(Autodesk.Axes.X, 90.0, 0);
+            rightBottomCircle.Rotate(Autodesk.Axes.X, 90.0, 0);
+            rightUpperCircle.Rotate(Autodesk.Axes.X, 90.0, 0);
             // Cutting
             psModel.Solids.CreateSolidExtrusionFromWireframe(leftBottomCircle, (8.0 / 130.0) * width, (8.0 / 130.0) * width);
             psModel.Solids.CreateSolidExtrusionFromWireframe(leftUpperCircle, (8.0 / 130.0) * width, (8.0 / 130.0) * width);
             psModel.Solids.CreateSolidExtrusionFromWireframe(rightBottomCircle, (8.0 / 130.0) * width, (8.0 / 130.0) * width);
             psModel.Solids.CreateSolidExtrusionFromWireframe(rightUpperCircle, (8.0 / 130.0) * width, (8.0 / 130.0) * width);
+
+            
+           
+            
+
         }
 
         static void SaveModel()
