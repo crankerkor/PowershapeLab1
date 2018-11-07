@@ -132,10 +132,10 @@ namespace PowershapeLab1
             PSArc rightBottomCircle = psModel.Arcs.CreateArcCircle(rightBottomCircleCenter, rightBottomCircleStartingPoint, radius);
             PSArc rightUpperCircle = psModel.Arcs.CreateArcCircle(rightUpperCircleCenter, rightUpperCircleStartingPoint, radius);
 
-            leftBottomCircle.Rotate(Autodesk.Axes.X, 90.0, 0);
-            leftUpperCircle.Rotate(Autodesk.Axes.X, 90.0, 0);
-            rightBottomCircle.Rotate(Autodesk.Axes.X, 90.0, 0);
-            rightUpperCircle.Rotate(Autodesk.Axes.X, 90.0, 0);
+            leftBottomCircle.Rotate(Autodesk.Axes.X, 90.0, 0, leftBottomCircleCenter);
+            leftUpperCircle.Rotate(Autodesk.Axes.X, 90.0, 0, leftUpperCircleCenter);
+            rightBottomCircle.Rotate(Autodesk.Axes.X, 90.0, 0, rightBottomCircleCenter);
+            rightUpperCircle.Rotate(Autodesk.Axes.X, 90.0, 0, rightUpperCircleCenter);
             // Cutting
             psModel.Solids.CreateSolidExtrusionFromWireframe(leftBottomCircle, (8.0 / 130.0) * width, (8.0 / 130.0) * width);
             psModel.Solids.CreateSolidExtrusionFromWireframe(leftUpperCircle, (8.0 / 130.0) * width, (8.0 / 130.0) * width);
