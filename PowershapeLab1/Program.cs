@@ -10,16 +10,18 @@ namespace PowershapeLab1
 {
     class Program
     {
+        static double defaultLength = 130.0;
         static double length = 200.0;
-        static double width = length * ((double)(80.0) / 130.0);
+        static double width = length * ((80.0) / defaultLength);
 
-        static double distanceToCentralCenter = length * ((double)(50.0) / 130.0);
+        static double distanceToCentralCenter = length * ((50.0) / defaultLength);
 
         static PSModel psModel;
+        static PSAutomation powerSHAPE;
 
         static void Main(string[] args)
         {
-            PSAutomation powerSHAPE = new PSAutomation(Autodesk.ProductInterface.InstanceReuse.CreateNewInstance);
+            powerSHAPE = new PSAutomation(Autodesk.ProductInterface.InstanceReuse.CreateNewInstance);
             powerSHAPE.Reset();
 
             //Creating and selecting model
@@ -34,6 +36,7 @@ namespace PowershapeLab1
             BuildingBasis();
             BuildingCylinder();
             CuttingCirclesInBase();
+            BuildingSidebars();
 
             // Ending execution
             //SaveModel();
@@ -43,9 +46,9 @@ namespace PowershapeLab1
         static void BuildingBasis()
         {
             double halfLen = length / 2.0;
-            double basisHeight = length * ((double)(12.0) / 130.0);
-            double marginFromCenterToHillBorder = length * ((double)(21.0) / 130.0);
-            double upperHillHeight = length * ((double)(19.0) / 130.0);
+            double basisHeight = length * ((12.0) / defaultLength);
+            double marginFromCenterToHillBorder = length * ((21.0) / defaultLength);
+            double upperHillHeight = length * ((19.0) / defaultLength);
 
             // Points
             Point origin = new Point(0.0, 0.0, 0.0);
@@ -95,7 +98,7 @@ namespace PowershapeLab1
 
         static void BuildingCylinder()
         {
-            double radius = length * ((double)(38.0) / 130.0);
+            double radius = length * ((38.0) / defaultLength);
 
             // Points
             Point circleCenter = new Point(0.0, distanceToCentralCenter, 0.0);
@@ -110,17 +113,17 @@ namespace PowershapeLab1
 
         static void CuttingCirclesInBase()
         {
-            double lengthToCircleCenter = length * ((double)(50.0) / 130.0);
-            double widthToBottomCircleCenter = length * ((double)(17.0) / 130.0);
-            double widthToUpperCircleCenter = length * ((double)(63.0) / 130.0);
-            double radius = length * ((double)(7.0) / 130.0);
+            double lengthToCircleCenter = length * (50.0 / defaultLength);
+            double widthToBottomCircleCenter = length * (17.0 / defaultLength);
+            double widthToUpperCircleCenter = length * (63.0 / defaultLength);
+            double radius = length * (7.0 / defaultLength);
 
             // Points
             Point leftBottomCircleCenter = new Point(-lengthToCircleCenter, 0.0, widthToBottomCircleCenter);
             Point leftUpperCircleCenter = new Point(-lengthToCircleCenter, 0.0, widthToUpperCircleCenter);
             Point rightBottomCircleCenter = new Point(lengthToCircleCenter, 0.0, widthToBottomCircleCenter);
             Point rightUpperCircleCenter = new Point(lengthToCircleCenter, 0.0, widthToUpperCircleCenter);
-            
+
             Point leftBottomCircleStartingPoint = new Point(-lengthToCircleCenter, 0.0 + radius, widthToBottomCircleCenter);
             Point leftUpperCircleStartingPoint = new Point(-lengthToCircleCenter, 0.0 + radius, widthToUpperCircleCenter);
             Point rightBottomCircleStartingPoint = new Point(lengthToCircleCenter, 0.0 + radius, widthToBottomCircleCenter);
@@ -132,20 +135,65 @@ namespace PowershapeLab1
             PSArc rightBottomCircle = psModel.Arcs.CreateArcCircle(rightBottomCircleCenter, rightBottomCircleStartingPoint, radius);
             PSArc rightUpperCircle = psModel.Arcs.CreateArcCircle(rightUpperCircleCenter, rightUpperCircleStartingPoint, radius);
 
+            // Rotating circles to the correct plane
             leftBottomCircle.Rotate(Autodesk.Axes.X, 90.0, 0, leftBottomCircleCenter);
             leftUpperCircle.Rotate(Autodesk.Axes.X, 90.0, 0, leftUpperCircleCenter);
             rightBottomCircle.Rotate(Autodesk.Axes.X, 90.0, 0, rightBottomCircleCenter);
             rightUpperCircle.Rotate(Autodesk.Axes.X, 90.0, 0, rightUpperCircleCenter);
-            // Cutting
-            psModel.Solids.CreateSolidExtrusionFromWireframe(leftBottomCircle, (8.0 / 130.0) * width, (8.0 / 130.0) * width);
-            psModel.Solids.CreateSolidExtrusionFromWireframe(leftUpperCircle, (8.0 / 130.0) * width, (8.0 / 130.0) * width);
-            psModel.Solids.CreateSolidExtrusionFromWireframe(rightBottomCircle, (8.0 / 130.0) * width, (8.0 / 130.0) * width);
-            psModel.Solids.CreateSolidExtrusionFromWireframe(rightUpperCircle, (8.0 / 130.0) * width, (8.0 / 130.0) * width);
 
-            
-           
-            
+            // Extruding cylinders which'll be subtracted
+            psModel.Solids.CreateSolidExtrusionFromWireframe(leftBottomCircle, (8.0 / defaultLength) * width + 20.0, 0.0);
+            psModel.Solids.CreateSolidExtrusionFromWireframe(leftUpperCircle, (8.0 / defaultLength) * width + 20.0, 0.0);
+            psModel.Solids.CreateSolidExtrusionFromWireframe(rightBottomCircle, (8.0 / defaultLength) * width + 20.0, 0.0);
+            psModel.Solids.CreateSolidExtrusionFromWireframe(rightUpperCircle, (8.0 / defaultLength) * width + 20.0, 0.0);
 
+#pragma warning disable CS0618 // Using raw macro for subtraction
+
+            powerSHAPE.Execute("add Solid \"3\"",
+                               "add Solid \"4\"",
+                               "add Solid \"5\"",
+                               "add Solid \"6\"",
+                               "CREATE FEATURE SUBTRACTION",
+                               "select clearlist");
+
+#pragma warning restore CS0618 // Using raw macro for subtraction
+        }
+
+
+        static void BuildingSidebars()
+        {
+            double distanceFromFront = length * (double)(33.0 / defaultLength);
+            double basisHeight = length * ((double)(12.0) / defaultLength);
+            double sidebarHeight = (double)(basisHeight + 56.641383);
+            double sidebarHalfLen = (double) (33.113424 - (length / 2.0));
+            double sidebarWidth = length * ((double)(14.0) / defaultLength);
+
+            //Points
+            Point leftBottomPoint = new Point(- (length / 2.0), basisHeight, distanceFromFront);
+            Point leftUpperPoint = new Point(sidebarHalfLen, sidebarHeight, distanceFromFront);
+
+            Point rightBottomPoint = new Point((length / 2.0), basisHeight, distanceFromFront);
+            Point rightUpperPoint = new Point(-sidebarHalfLen, sidebarHeight, distanceFromFront);
+
+
+            //Lines
+            PSLine leftLine = psModel.Lines.CreateLine(leftBottomPoint, leftUpperPoint);
+            PSLine rightLine = psModel.Lines.CreateLine(rightBottomPoint, rightUpperPoint);
+
+            PSLine upperLine = psModel.Lines.CreateLine(leftUpperPoint, rightUpperPoint);
+            PSLine bottomLine = psModel.Lines.CreateLine(leftBottomPoint, rightBottomPoint);
+
+            //Creating wireframe
+            List<PSWireframe> lines = new List<PSWireframe>()
+            {
+                leftLine,
+                rightLine,
+                upperLine,
+                bottomLine
+            };
+
+            // Extruding sidebars
+            psModel.Solids.CreateSolidExtrusionsFromWireframes(lines, sidebarWidth, 0.0);
         }
 
         static void SaveModel()
