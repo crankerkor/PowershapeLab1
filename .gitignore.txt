@@ -1,0 +1,4 @@
+.vs/
+PowershapeLab1/bin
+PowershapeLab1/obj
+
