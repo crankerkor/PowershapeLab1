@@ -162,11 +162,11 @@ namespace PowershapeLab1
 
         static void BuildingSidebars()
         {
-            double distanceFromFront = length * (double)(33.0 / defaultLength);
-            double basisHeight = length * ((double)(12.0) / defaultLength);
-            double sidebarHeight = (double)(basisHeight + 56.641383);
-            double sidebarHalfLen = (double) (33.113424 - (length / 2.0));
-            double sidebarWidth = length * ((double)(14.0) / defaultLength);
+            double distanceFromFront = length * (33.0 / defaultLength);
+            double basisHeight = length * ((12.0) / defaultLength);
+            double sidebarHeight = (basisHeight + length * (56.641383 / defaultLength));
+            double sidebarHalfLen =  (length * (33.113424 / defaultLength) - (length / 2.0));
+            double sidebarWidth = length * ((14.0) / defaultLength);
 
             //Points
             Point leftBottomPoint = new Point(- (length / 2.0), basisHeight, distanceFromFront);
